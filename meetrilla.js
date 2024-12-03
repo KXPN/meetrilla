@@ -20,13 +20,20 @@ class Meetrilla {
   participantesSinCamaraGrupoAnchura = '';
 
   constructor() {
+    this.inicializar();
+  }
+
+  inicializar = () => {
     const dParticipantesListaIcono = (
       document.querySelector(this.selectoresPorNombre.participantesListaIcono)
     );
+    if (!dParticipantesListaIcono) {
+      setTimeout(this.inicializar.bind(this));
+      return;
+    }
     dParticipantesListaIcono.click();
     dParticipantesListaIcono.click();
     this.intervalo = setInterval(this.revisarCambios.bind(this));
-    // this.intervalo = setInterval(this.grillarParticipantes.bind(this), 1000);
   }
 
   revisarCambios = () => {
