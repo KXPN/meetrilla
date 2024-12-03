@@ -1,38 +1,100 @@
 class Meetrilla {
 
-  participantesListaIconoSelector = '[data-panel-id][data-promo-anchor-id] i';
-  participanteConCamaraNombreSelector = '[data-self-name] [role=tooltip]';
-  participanteSelector = (
-    '[data-panel-container-id=sidePanel1] [data-participant-id]'
-  );
-  participanteNombreSelector = '[data-self-name]';
-  participantesGrupoUsuarioSelector = (
-    '[draggable=false]:not([data-emoji],[title])'
-  );
+  selectoresPorNombre = {
+    notificacion: '[data-key^="notification-"]',
+    listaParticipante: (
+      '[data-panel-container-id=sidePanel1] [data-participant-id]'
+    ),
+    participante: '[data-participant-id][data-tile-media-id]',
+    participanteConCamaraNombre: '[data-self-name] [role=tooltip]',
+    participantesListaIcono: '[data-panel-id][data-promo-anchor-id] i',
+    participantesSinCamaraGrupoPrimerIntegrante: (
+      '[draggable=false]:not([data-emoji],[title])'
+    ),
+  };
 
   participantes = [];
   participantesPorNombre = {};
   participantesConCamaraPorNombre = {};
+  participantesSinCamaraGrupoTexto = '';
+  participantesSinCamaraGrupoAnchura = '';
 
   constructor() {
     const dParticipantesListaIcono = (
-      document.querySelector(this.participantesListaIconoSelector)
+      document.querySelector(this.selectoresPorNombre.participantesListaIcono)
     );
     dParticipantesListaIcono.click();
     dParticipantesListaIcono.click();
-    this.intervalo = setInterval(this.grillarParticipantes.bind(this));
+    this.intervalo = setInterval(this.revisarCambios.bind(this));
+    // this.intervalo = setInterval(this.grillarParticipantes.bind(this), 1000);
+  }
+
+  revisarCambios = () => {
+    const dParticipantesSinCamaraGrupo = (
+      document
+      .querySelector(
+        this.selectoresPorNombre.participantesSinCamaraGrupoPrimerIntegrante
+      )
+      .closest('[style]')
+    );
+    const participantesSinCamaraGrupoTexto = (
+      dParticipantesSinCamaraGrupo.firstChild.innerText.trim()
+    );
+    const participantesSinCamaraGrupoDimension = (
+      dParticipantesSinCamaraGrupo.offsetWidth +
+      'x' +
+      dParticipantesSinCamaraGrupo.offsetHeight
+    );
+    let ejecucionEsPrimera = !document.querySelector('.jsGrilla');
+    if (!this.participantesSinCamaraGrupoTexto) {
+      ejecucionEsPrimera = true;
+      this.participantesSinCamaraGrupoTexto = participantesSinCamaraGrupoTexto;
+      this.participantesSinCamaraGrupoDimension = (
+        participantesSinCamaraGrupoDimension
+      );
+    }
+    let participantesSinCamaraCantidadCambio = (
+      this.participantesSinCamaraGrupoTexto !==
+      participantesSinCamaraGrupoTexto
+    );
+    let participantesSinCamaraGrupoDimensionCambio = (
+      this.participantesSinCamaraGrupoDimension !==
+      participantesSinCamaraGrupoDimension
+    );
+    const dNotificacion = (
+      document.querySelector(this.selectoresPorNombre.notificacion)
+    );
+    let hayNotificacion = (dNotificacion && !dNotificacion.dataset.fueVista);
+    if (hayNotificacion) {
+      dNotificacion.dataset.fueVista = true;
+    }
+    if (
+      !ejecucionEsPrimera &&
+      !participantesSinCamaraCantidadCambio &&
+      !participantesSinCamaraGrupoDimensionCambio &&
+      !hayNotificacion
+    ) {
+      return;
+    }
+    this.participantesSinCamaraGrupoTexto = participantesSinCamaraGrupoTexto;
+    this.participantesSinCamaraGrupoDimension = (
+      participantesSinCamaraGrupoDimension
+    );
+    this.grillarParticipantes();
   }
 
   grillarParticipantes = () => {
     this.participantesConCamaraPorNombre = {};
-    const dParticipantesConCamaraNombres = (
-      document.querySelectorAll(this.participanteConCamaraNombreSelector)
+    const dParticipantes = (
+      document.querySelectorAll(this.selectoresPorNombre.participante)
     );
-    dParticipantesConCamaraNombres.forEach(this.agregarParticipanteConCamara);
+    dParticipantes.forEach(this.agregarParticipanteConCamara);
     this.participantes = [];
     this.participantesPorNombre = {};
-    const dParticipantes = document.querySelectorAll(this.participanteSelector);
-    dParticipantes.forEach(this.agregarParticipante);
+    const dListaParticipantes = (
+      document.querySelectorAll(this.selectoresPorNombre.listaParticipante)
+    );
+    dListaParticipantes.forEach(this.agregarParticipante);
     if (!this.participantes.length) {
       return;
     }
@@ -48,24 +110,15 @@ class Meetrilla {
     dGrilla.style.backgroundColor = '#3c4043';
     dGrilla.style.top = 0;
     dGrilla.style.left = 0;
-    const dParticipantesCuadros = (
-      document.querySelectorAll(this.participanteNombreSelector)
+    const dParticipantesSinCamaraGrupo = (
+      document
+      .querySelector(
+        this.selectoresPorNombre.participantesSinCamaraGrupoPrimerIntegrante
+      )
+      .closest('[style]')
     );
-    const dParticipantesGrupo = (
-      dParticipantesCuadros
-      [dParticipantesCuadros.length - 1]
-      .parentElement
-      .parentElement
-      .parentElement
-      .parentElement
-      .parentElement
-      .parentElement
-      .parentElement
-      .parentElement
-      .previousElementSibling
-    );
-    const participantesGrupoAnchura = dParticipantesGrupo.offsetWidth;
-    const participantesGrupoAltura = dParticipantesGrupo.offsetHeight;
+    const participantesGrupoAnchura = dParticipantesSinCamaraGrupo.offsetWidth;
+    const participantesGrupoAltura = dParticipantesSinCamaraGrupo.offsetHeight;
     let anchura = participantesGrupoAnchura;
     let altura = participantesGrupoAltura;
     let anchuraDivisor = 2;
@@ -87,32 +140,55 @@ class Meetrilla {
       const dParticipante = document.createElement('div');
       dParticipante.classList.add('jsParticipanteLampara');
       dParticipante.style.display = 'inline-block';
+      dParticipante.style.height = (altura + 'px');
+      dParticipante.style.position = 'relative';
+      dParticipante.style.width = (anchura + 'px');
+
       const dParticipanteImagen = participante.dImagen.cloneNode(true);
+      dParticipanteImagen.className = '';
       dParticipanteImagen.classList.add('jsParticipanteLamparaImagen');
-      dParticipanteImagen.style.float = 'right';
-      dParticipanteImagen.style.width = ((anchura / 2) + 'px');
+      dParticipanteImagen.style.float = 'left';
       dParticipanteImagen.style.height = 'initial';
+      dParticipanteImagen.style.width = ((anchura / 2) + 'px');
       dParticipante.appendChild(dParticipanteImagen);
+
+      const dParticipanteAudio = participante.dAudio.cloneNode(true);
+      dParticipanteAudio.className = '';
+      dParticipanteAudio.classList.add('jsParticipanteLamparaAudio');
+      dParticipanteAudio.style.transform = 'scale(0.5)';
+      dParticipante.appendChild(dParticipanteAudio);
+
       const dParticipanteNombre = document.createElement('span');
       dParticipanteNombre.classList.add('jsParticipanteLamparaNombre');
       dParticipanteNombre.textContent = participante.nombre;
+      dParticipanteNombre.style.background = 'rgba(0, 0, 0, .8)';
+      dParticipanteNombre.style.color = 'white';
+      dParticipanteNombre.style.left = '0';
+      dParticipanteNombre.style.position = 'absolute';
+      dParticipanteNombre.style.top = '0';
       dParticipante.appendChild(dParticipanteNombre);
-      const dParticipanteAudio = participante.dAudio.cloneNode(true);
-      dParticipanteAudio.classList.add('jsParticipanteLamparaAudio');
-      dParticipante.appendChild(dParticipanteAudio);
-      dParticipante.style.width = (anchura + 'px');
-      dParticipante.style.height = (altura + 'px');
+
       dGrilla.appendChild(dParticipante);
     }
-    dParticipantesGrupo.appendChild(dGrilla);
+    dParticipantesSinCamaraGrupo.appendChild(dGrilla);
   }
 
-  agregarParticipanteConCamara = (dParticipanteConCamaraNombre) => {
-    this.participantesConCamaraPorNombre[dParticipanteConCamaraNombre] = true;
+  agregarParticipanteConCamara = (dParticipante) => {
+    const dParticipanteNombre = (
+      dParticipante.innerText.split('\n').pop().trim()
+    );
+    if (!dParticipanteNombre) {
+      return;
+    }
+    const dParticipanteVideo = dParticipante.querySelector('video');
+    if (!dParticipanteVideo) {
+      return;
+    }
+    this.participantesConCamaraPorNombre[dParticipanteNombre] = true;
   }
 
-  agregarParticipante = (dParticipante) => {
-    const nombre = dParticipante.querySelector('span').textContent.trim();
+  agregarParticipante = (dListaParticipante) => {
+    const nombre = dListaParticipante.querySelector('span').textContent.trim();
     if (this.participantesConCamaraPorNombre[nombre]) {
       return;
     }
@@ -122,8 +198,8 @@ class Meetrilla {
     this.participantesPorNombre[nombre] = true;
     const participante = {
       nombre,
-      dImagen: dParticipante.querySelector('img'),
-      dAudio: dParticipante.querySelector('[data-tooltip-enabled]'),
+      dImagen: dListaParticipante.querySelector('img'),
+      dAudio: dListaParticipante.querySelector('[data-tooltip-enabled]'),
     };
     this.participantes.push(participante);
   }
