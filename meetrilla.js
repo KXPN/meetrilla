@@ -37,13 +37,21 @@ class Meetrilla {
   }
 
   revisarCambios = () => {
-    const dParticipantesSinCamaraGrupo = (
+    const dParticipantesSinCamaraGrupoPrimerIntegrante = (
       document
       .querySelector(
         this.selectoresPorNombre.participantesSinCamaraGrupoPrimerIntegrante
       )
-      .closest('[style]')
     );
+    if (!dParticipantesSinCamaraGrupoPrimerIntegrante) {
+      return;
+    }
+    const dParticipantesSinCamaraGrupo = (
+      dParticipantesSinCamaraGrupoPrimerIntegrante.closest('[style]')
+    );
+    if (!dParticipantesSinCamaraGrupo) {
+      return;
+    }
     const participantesSinCamaraGrupoTexto = (
       dParticipantesSinCamaraGrupo.firstChild.innerText.trim()
     );
@@ -87,10 +95,10 @@ class Meetrilla {
     this.participantesSinCamaraGrupoDimension = (
       participantesSinCamaraGrupoDimension
     );
-    this.grillarParticipantes();
+    this.grillarParticipantes(dParticipantesSinCamaraGrupo);
   }
 
-  grillarParticipantes = () => {
+  grillarParticipantes = (dParticipantesSinCamaraGrupo) => {
     this.participantesConCamaraPorNombre = {};
     const dParticipantes = (
       document.querySelectorAll(this.selectoresPorNombre.participante)
@@ -117,13 +125,6 @@ class Meetrilla {
     dGrilla.style.backgroundColor = '#3c4043';
     dGrilla.style.top = 0;
     dGrilla.style.left = 0;
-    const dParticipantesSinCamaraGrupo = (
-      document
-      .querySelector(
-        this.selectoresPorNombre.participantesSinCamaraGrupoPrimerIntegrante
-      )
-      .closest('[style]')
-    );
     const participantesGrupoAnchura = dParticipantesSinCamaraGrupo.offsetWidth;
     const participantesGrupoAltura = dParticipantesSinCamaraGrupo.offsetHeight;
     let anchura = participantesGrupoAnchura;
