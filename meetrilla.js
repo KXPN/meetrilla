@@ -43,7 +43,13 @@ class Meetrilla {
         this.selectoresPorNombre.participantesSinCamaraGrupoPrimerIntegrante
       )
     );
-    if (!dParticipantesSinCamaraGrupoPrimerIntegrante) {
+    if (
+      !dParticipantesSinCamaraGrupoPrimerIntegrante ||
+      (
+        dParticipantesSinCamaraGrupoPrimerIntegrante
+        .closest('[data-participant-id]')
+      )
+    ) {
       return;
     }
     const dParticipantesSinCamaraGrupo = (
