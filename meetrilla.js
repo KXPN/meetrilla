@@ -33,6 +33,13 @@ class Meetrilla {
     }
     dParticipantesListaIcono.click();
     dParticipantesListaIcono.click();
+    const dListaParticipante = (
+      document.querySelector(this.selectoresPorNombre.listaParticipante)
+    );
+    if (!dListaParticipante) {
+      setTimeout(this.inicializar.bind(this));
+      return;
+    }
     this.intervalo = setInterval(this.revisarCambios.bind(this));
   }
 
