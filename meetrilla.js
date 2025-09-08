@@ -55,6 +55,10 @@ class Meetrilla {
       (
         dParticipantesSinCamaraGrupoPrimerIntegrante
         .closest('[data-participant-id]')
+      ) ||
+      (
+        dParticipantesSinCamaraGrupoPrimerIntegrante
+        .closest('[data-priority]')
       )
     ) {
       return;
