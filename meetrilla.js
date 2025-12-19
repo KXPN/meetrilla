@@ -6,10 +6,9 @@ class Meetrilla {
       '[data-panel-container-id=sidePanel1] [data-participant-id]'
     ),
     participante: '[data-participant-id][data-tile-media-id]',
-    participanteConCamaraNombre: '[data-self-name] [role=tooltip]',
-    participantesListaIcono: '[data-panel-id][data-promo-anchor-id] i',
+    participantesListaIcono: '[data-avatar-count]',
     participantesSinCamaraGrupoPrimerIntegrante: (
-      '[draggable=false]:not([data-emoji],[title])'
+      '[jsname][draggable=false]:not([data-emoji],[title])'
     ),
   };
 
