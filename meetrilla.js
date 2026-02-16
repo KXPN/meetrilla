@@ -31,7 +31,6 @@ class Meetrilla {
       return;
     }
     dParticipantesListaIcono.click();
-    dParticipantesListaIcono.click();
     const dListaParticipante = (
       document.querySelector(this.selectoresPorNombre.listaParticipante)
     );
@@ -39,6 +38,7 @@ class Meetrilla {
       setTimeout(this.inicializar.bind(this));
       return;
     }
+    dParticipantesListaIcono.click();
     this.intervalo = setInterval(this.revisarCambios.bind(this));
   }
 
